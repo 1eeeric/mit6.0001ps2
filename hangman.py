@@ -103,8 +103,6 @@ def get_available_letters(letters_guessed):
     available_letters = str(available_letters)
     return available_letters
 
-secret_word_test = 'dominate'
-
 def hangman(secret_word):
     '''
     secret_word: string, the secret word to guess.
@@ -135,7 +133,7 @@ def hangman(secret_word):
     my_letters = []
     #
     print('Welcome to the game Hangman!')
-    print('I am thinking of a word that is '+ str(len(secret_word_test)) +' letter(s) long.')
+    print('I am thinking of a word that is '+ str(len(secret_word)) +' letter(s) long.')
 
     for i in range(100):
         print('-'*50)
@@ -162,37 +160,37 @@ def hangman(secret_word):
             if warnings_count > 0:
                 warnings_count -= 1
                 print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left.')
-                get_guessed_word(secret_word_test, my_letters)
+                get_guessed_word(secret_word, my_letters)
             elif warnings_count == 0:
                 guess_count -= 1
                 print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess")
-                get_guessed_word(secret_word_test, my_letters)
+                get_guessed_word(secret_word, my_letters)
         #
         #This portion processes valid guesses
         if str.isalpha(myinput1) == True and myinput1 not in my_letters and guess_count > 0:
-            if myinput1 in secret_word_test:
+            if myinput1 in secret_word:
                 my_letters.append(myinput1)
-                mytempstr1 = get_guessed_word(secret_word_test, my_letters)
+                mytempstr1 = get_guessed_word(secret_word, my_letters)
                 print('Good guess: ' + mytempstr1)
             elif myinput1 in ['a','e','i','o','u']:
                 my_letters.append(myinput1)
-                mytempstr1 = get_guessed_word(secret_word_test, my_letters)
+                mytempstr1 = get_guessed_word(secret_word, my_letters)
                 print('Oops! That letter is not in my word: ' + mytempstr1)
                 guess_count -= 2
             else:
                 my_letters.append(myinput1)
-                mytempstr1 = get_guessed_word(secret_word_test, my_letters)
+                mytempstr1 = get_guessed_word(secret_word, my_letters)
                 print('Oops! That letter is not in my word: ' + mytempstr1)
                 guess_count -= 1
         #            
         #End game conditions whichj break the for loop
-        if is_word_guessed(secret_word_test, my_letters) == True:
-            score_count = guess_count * len(set(secret_word_test))
+        if is_word_guessed(secret_word, my_letters) == True:
+            score_count = guess_count * len(set(secret_word))
             print('Congratulations, you won!')
             print('Your total score for this game is: ' + str(score_count) + '.')
             break
         if guess_count == 0:
-            print('Sorry you ran out of guesses. The word was ' + secret_word_test + '.')
+            print('Sorry you ran out of guesses. The word was ' + secret_word + '.')
             break
         print('You have ' + str(warnings_count) + ' warning(s) left.')
         print('You have '+str(guess_count)+' guess(es) left.')
@@ -335,5 +333,5 @@ if __name__ == "__main__":
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
-    #secret_word = choose_word(wordlist)
+    secret_word = choose_word(wordlist)
     #hangman_with_hints(secret_word)
