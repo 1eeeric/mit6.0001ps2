@@ -149,6 +149,13 @@ def hangman(secret_word):
         myinput1 = str(input('Please guess a letter: '))
         #
         #This portion processes warnings
+        if str.isalpha(myinput1) == False or len(myinput1) != 1:
+            if warnings_count > 0:
+                warnings_count -= 1
+                print('Oops! Invalid input! Please key in only ONE alphabet. You have ' + str(warnings_count) + ' warnings left.')
+            elif warnings_count == 0: 
+                guess_count -= 1
+                print('Oops! Invalid input! Please key in only ONE alphabet. You have no warnings left so you lose one guess')
         if myinput1 in my_letters and warnings_count > 0:
             warnings_count -= 1
             print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left.')
@@ -159,11 +166,11 @@ def hangman(secret_word):
             get_guessed_word(secret_word_test, my_letters)
         #
         #This portion processes valid guesses
-        if myinput1 not in my_letters and myinput1 in secret_word_test and guess_count > 0:
+        if str.isalpha(myinput1) == True and myinput1 not in my_letters and myinput1 in secret_word_test and guess_count > 0:
             my_letters.append(myinput1)
             mytempstr1 = get_guessed_word(secret_word_test, my_letters)
             print('Good guess: ' + mytempstr1)
-        elif myinput1 not in my_letters and myinput1 not in secret_word_test and guess_count > 0:
+        elif str.isalpha(myinput1) == True and myinput1 not in my_letters and myinput1 not in secret_word_test and guess_count > 0:
             my_letters.append(myinput1)
             mytempstr1 = get_guessed_word(secret_word_test, my_letters)
             print('Oops! That letter is not in my word: ' + mytempstr1)
