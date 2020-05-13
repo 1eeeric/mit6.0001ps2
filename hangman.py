@@ -103,7 +103,7 @@ def get_available_letters(letters_guessed):
     available_letters = str(available_letters)
     return available_letters
 
-secret_word_test = 'congratulations' ##TO REMOVE##
+secret_word_test = 'dominate'
 
 def hangman(secret_word):
     '''
@@ -149,6 +149,7 @@ def hangman(secret_word):
         myinput1 = str(input('Please guess a letter: '))
         #
         #This portion processes warnings
+        #Input type wrong wartning
         if str.isalpha(myinput1) == False or len(myinput1) != 1:
             if warnings_count > 0:
                 warnings_count -= 1
@@ -156,30 +157,39 @@ def hangman(secret_word):
             elif warnings_count == 0: 
                 guess_count -= 1
                 print('Oops! Invalid input! Please key in only ONE alphabet. You have no warnings left so you lose one guess')
-        if myinput1 in my_letters and warnings_count > 0:
-            warnings_count -= 1
-            print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left.')
-            get_guessed_word(secret_word_test, my_letters)
-        elif myinput1 in my_letters and warnings_count == 0:
-            guess_count -= 1
-            print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess")
-            get_guessed_word(secret_word_test, my_letters)
+        #Repeat letter warning
+        if myinput1 in my_letters: 
+            if warnings_count > 0:
+                warnings_count -= 1
+                print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left.')
+                get_guessed_word(secret_word_test, my_letters)
+            elif warnings_count == 0:
+                guess_count -= 1
+                print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess")
+                get_guessed_word(secret_word_test, my_letters)
         #
         #This portion processes valid guesses
-        if str.isalpha(myinput1) == True and myinput1 not in my_letters and myinput1 in secret_word_test and guess_count > 0:
-            my_letters.append(myinput1)
-            mytempstr1 = get_guessed_word(secret_word_test, my_letters)
-            print('Good guess: ' + mytempstr1)
-        elif str.isalpha(myinput1) == True and myinput1 not in my_letters and myinput1 not in secret_word_test and guess_count > 0:
-            my_letters.append(myinput1)
-            mytempstr1 = get_guessed_word(secret_word_test, my_letters)
-            print('Oops! That letter is not in my word: ' + mytempstr1)
-            guess_count -= 1
-#            
-#End game conditions whichj break the for loop
+        if str.isalpha(myinput1) == True and myinput1 not in my_letters and guess_count > 0:
+            if myinput1 in secret_word_test:
+                my_letters.append(myinput1)
+                mytempstr1 = get_guessed_word(secret_word_test, my_letters)
+                print('Good guess: ' + mytempstr1)
+            elif myinput1 in ['a','e','i','o','u']:
+                my_letters.append(myinput1)
+                mytempstr1 = get_guessed_word(secret_word_test, my_letters)
+                print('Oops! That letter is not in my word: ' + mytempstr1)
+                guess_count -= 2
+            else:
+                my_letters.append(myinput1)
+                mytempstr1 = get_guessed_word(secret_word_test, my_letters)
+                print('Oops! That letter is not in my word: ' + mytempstr1)
+                guess_count -= 1
+        #            
+        #End game conditions whichj break the for loop
         if is_word_guessed(secret_word_test, my_letters) == True:
+            score_count = guess_count * len(set(secret_word_test))
             print('Congratulations, you won!')
-            #print('Your total score for this game is: ')
+            print('Your total score for this game is: ' + str(score_count) + '.')
             break
         if guess_count == 0:
             print('Sorry you ran out of guesses. The word was ' + secret_word_test + '.')
@@ -192,9 +202,6 @@ def hangman(secret_word):
     
 '''
 - Number of iterations in for loop to be troubleshooted. Now it is at a fixed number
-<> Multiple guesses consumed on resuming valid guess after a series of bad guesses
-- Additional error checks (isalpha checks and ensuring only the first input is taken. Consider LEFT(1) for hard handed approach?
-- Score calculation
 - Random generation of words
 - Convert secret_word_test to actual non test variable
 
