@@ -273,48 +273,6 @@ def hangman(secret_word):
         print('Available characters: ' + get_available_letters(my_letters))
 
 
-    
-'''
-BUGS
-- Number of iterations in for loop to be troubleshooted. Now it is at a fixed number
-- Input small letter conversion
-'''
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # When you've completed your hangman function, scroll down to the bottom
 # of the file and uncomment the first two lines to test
@@ -325,21 +283,29 @@ BUGS
 # -----------------------------------
 
 
-
-def match_with_gaps(my_word, other_word):
+def match_with_gaps(my_word, other_word, my_letters):
     '''
     my_word: string with _ characters, current guess of secret word
     other_word: string, regular English word
+    secret_word: actual answer to the Hangman game
+    my_letters: list of letters already guessed
     returns: boolean, True if all the actual letters of my_word match the 
         corresponding letters of other_word, or the letter is the special symbol
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
-
-
-
+    my_word = my_word.replace(" ","")
+    
+    if len(my_word) != len(other_word):
+        return False
+    else:
+        for i in range(len(other_word)):
+            if my_word[i] != other_word[i]:
+                return False
+            
+            
+            
 def show_possible_matches(my_word):
     '''
     my_word: string with _ characters, current guess of secret word
@@ -385,6 +351,14 @@ def hangman_with_hints(secret_word):
     # FILL IN YOUR CODE HERE AND DELETE "pass"
     pass
 
+    
+'''
+BUGS
+- Number of iterations in for loop to be troubleshooted. Now it is at a fixed number
+- Input small letter conversion
+- Update docstrings
+'''
+
 
 
 # When you've completed your hangman_with_hint function, comment the two similar
@@ -399,8 +373,8 @@ if __name__ == "__main__":
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
     
-    secret_word = choose_word(wordlist)
-    hangman(secret_word)
+    #secret_word = choose_word(wordlist)
+    #hangman(secret_word)
 
 ###############
     
