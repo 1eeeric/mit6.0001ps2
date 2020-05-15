@@ -1,8 +1,4 @@
 # Problem Set 2, hangman.py
-# Name: 
-# Collaborators:
-# Time spent:
-
 # Hangman Game
 # -----------------------------------
 # Helper code
@@ -32,8 +28,6 @@ def load_words():
     print("  ", len(wordlist), "words loaded.")
     return wordlist
 
-
-
 def choose_word(wordlist):
     """
     wordlist (list): list of words (strings)
@@ -49,7 +43,6 @@ def choose_word(wordlist):
 # Load the list of words into the variable wordlist
 # so that it can be accessed from anywhere in the program
 wordlist = load_words()
-
 
 def is_word_guessed(secret_word, letters_guessed):
     '''
@@ -103,8 +96,106 @@ def get_available_letters(letters_guessed):
     available_letters = str(available_letters)
     return available_letters
 
-secret_word_test = 'congratulations' ##TO REMOVE##
+guess_count = 0
+warnings_count = 0
+my_letters = []
+    
+#Check 1#
+def input_validity_check(user_input, warnings_count, guess_count):
+    '''
+    Parameters
+    ----------
+    user_input: letter input by player for guess
+    warnings_count: number of warnings left.
+    guess_count: number of guesses left
+    
+    Returns
+    -------
+    0, 1 or 2 as integers. 0 represents check passed. 1 represents warning deduction. 2 represents guess deduction. 
 
+    '''
+    if str.isalpha(user_input) == False or len(user_input) != 1:
+        if warnings_count > 0:
+            print('Oops! Invalid input! Please key in only ONE alphabet. You have ' + str(warnings_count) + ' warnings left.')
+            return 1
+        elif warnings_count <= 0: 
+            print('Oops! Invalid input! Please key in only ONE alphabet. You have no warnings left so you lose one guess')
+            return 2
+    else:
+        return 0
+ 
+#Check 2#
+def repeat_check(user_input, my_letters, secret_word, warnings_count, guess_count):
+    '''
+    This function is used to check for repeated guessed letters before allowing the guesses to be processed. 
+    
+    Parameters
+    ----------
+    user_input : single letter string. 
+    secret_word: the answer to the Hangman game that is selected by the computer randomly
+    warnings_count: the number of warnings remaining 
+    guess_count: the number of guesses remaining 
+   
+    Returns
+    -------
+    0, 1 or 2. 0 is a good check. 1 is a warning deduction. 2 is a guess deduction
+    '''
+    temp = user_input in my_letters
+    if temp == True:
+        if warnings_count > 0:
+            warnings_count -= 1
+            temp1 = get_guessed_word(secret_word, my_letters)
+            print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left: ' + str(temp1))
+            return 1
+        elif warnings_count <= 0:
+            guess_count -= 1
+            temp1 = get_guessed_word(secret_word, my_letters)
+            print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess: " + str(temp1))
+            return 2
+    elif temp == False:
+        return 0
+
+#Check 3#
+def game_code(user_input, secret_word, my_letters, guess_count):
+    """
+    This is the actual checking code for valid inputs. 
+   
+    Parameters
+    ----------
+    user_input : TYPE
+        DESCRIPTION.
+    secret_word : TYPE
+        DESCRIPTION.
+    my_letters : TYPE
+        DESCRIPTION.
+    mytempstr1 : TYPE
+        DESCRIPTION.
+    guess_count : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    0, 1, 2. 0 is a good guess. 1 is a bad vowel guess. 2 is a bad consonant guess. 
+
+    """
+#if str.isalpha(myinput1) == True and myinput1 not in my_letters and guess_count > 0:
+    if user_input in secret_word and len(user_input) == 1:
+        my_letters.append(user_input)
+        mytempstr1 = get_guessed_word(secret_word, my_letters)
+        print('Good guess: ' + mytempstr1)
+        return 0
+    elif user_input in ['a','e','i','o','u'] and len(user_input) == 1:
+        my_letters.append(user_input)
+        mytempstr1 = get_guessed_word(secret_word, my_letters)
+        print('Oops! That letter is not in my word: ' + mytempstr1)
+        return 1
+    elif len(user_input) == 1:
+        my_letters.append(user_input)
+        mytempstr1 = get_guessed_word(secret_word, my_letters)
+        print('Oops! That letter is not in my word: ' + mytempstr1)
+        return 2
+           
+  
 def hangman(secret_word):
     '''
     secret_word: string, the secret word to guess.
@@ -130,52 +221,52 @@ def hangman(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
+    #Initialize variables
     guess_count = 6
     warnings_count = 3
     my_letters = []
-    #
+    
     print('Welcome to the game Hangman!')
-    print('I am thinking of a word that is '+ str(len(secret_word_test)) +' letter(s) long.')
+    print('I am thinking of a word that is '+ str(len(secret_word)) +' letter(s) long.')
 
     for i in range(100):
         print('-'*50)
         #Initial printing of warning and guess count:
         if i == 0:
-                    print('You have ' + str(warnings_count) + ' warning(s) left.')
-                    print('You have '+str(guess_count)+' guess(es) left.')
-                    print('Available characters: ' + get_available_letters(my_letters))
-        #
+            print('You have ' + str(warnings_count) + ' warning(s) left.')
+            print('You have '+str(guess_count)+' guess(es) left.')
+            print('Available characters: ' + get_available_letters(my_letters))
+        
         #Input the guess here
         myinput1 = str(input('Please guess a letter: '))
-        #
-        #This portion processes warnings
-        if myinput1 in my_letters and warnings_count > 0:
+        check1 = input_validity_check(myinput1, warnings_count, guess_count)
+
+        # Validation and game code#
+        if check1 == 0: 
+            check2 = repeat_check(myinput1, my_letters, secret_word, warnings_count, guess_count)
+            if check2 == 0:
+                check3 = game_code(myinput1, secret_word, my_letters, guess_count)
+                if check3 == 1:
+                    guess_count -= 2
+                elif check3 == 2:
+                    guess_count -= 1        
+            elif check2 == 1: 
+                warnings_count -= 1
+            elif check2 == 2: 
+                guess_count -= 1
+        elif check1 == 1:
             warnings_count -= 1
-            print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left.')
-            get_guessed_word(secret_word_test, my_letters)
-        elif myinput1 in my_letters and warnings_count == 0:
+        elif check1 == 2:
             guess_count -= 1
-            print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess")
-            get_guessed_word(secret_word_test, my_letters)
-        #
-        #This portion processes valid guesses
-        if myinput1 not in my_letters and myinput1 in secret_word_test and guess_count > 0:
-            my_letters.append(myinput1)
-            mytempstr1 = get_guessed_word(secret_word_test, my_letters)
-            print('Good guess: ' + mytempstr1)
-        elif myinput1 not in my_letters and myinput1 not in secret_word_test and guess_count > 0:
-            my_letters.append(myinput1)
-            mytempstr1 = get_guessed_word(secret_word_test, my_letters)
-            print('Oops! That letter is not in my word: ' + mytempstr1)
-            guess_count -= 1
-#            
-#End game conditions whichj break the for loop
-        if is_word_guessed(secret_word_test, my_letters) == True:
+   
+        #End game conditions#
+        if is_word_guessed(secret_word, my_letters) == True:
+            score_count = guess_count * len(set(secret_word))
             print('Congratulations, you won!')
-            #print('Your total score for this game is: ')
+            print('Your total score for this game is: ' + str(score_count) + '.')
             break
-        if guess_count == 0:
-            print('Sorry you ran out of guesses. The word was ' + secret_word_test + '.')
+        if guess_count <= 0:
+            print('Sorry you ran out of guesses. The word was ' + secret_word + '.')
             break
         print('You have ' + str(warnings_count) + ' warning(s) left.')
         print('You have '+str(guess_count)+' guess(es) left.')
@@ -184,14 +275,9 @@ def hangman(secret_word):
 
     
 '''
+BUGS
 - Number of iterations in for loop to be troubleshooted. Now it is at a fixed number
-<> Multiple guesses consumed on resuming valid guess after a series of bad guesses
-- Additional error checks (isalpha checks and ensuring only the first input is taken. Consider LEFT(1) for hard handed approach?
-- Score calculation
-- Random generation of words
-- Convert secret_word_test to actual non test variable
-
-
+- Input small letter conversion
 '''
 
 
@@ -308,7 +394,7 @@ def hangman_with_hints(secret_word):
 
 
 if __name__ == "__main__":
-    # pass
+    pass
 
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
