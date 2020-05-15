@@ -99,7 +99,7 @@ def get_available_letters(letters_guessed):
 guess_count = 0
 warnings_count = 0
 my_letters = []
-
+    
 #Check 1#
 def input_validity_check(user_input, warnings_count, guess_count):
     '''
@@ -125,7 +125,7 @@ def input_validity_check(user_input, warnings_count, guess_count):
         return 0
  
 #Check 2#
-def repeat_check(user_input, secret_word, warnings_count, guess_count):
+def repeat_check(user_input, my_letters, secret_word, warnings_count, guess_count):
     '''
     This function is used to check for repeated guessed letters before allowing the guesses to be processed. 
     
@@ -140,18 +140,19 @@ def repeat_check(user_input, secret_word, warnings_count, guess_count):
     -------
     0, 1 or 2. 0 is a good check. 1 is a warning deduction. 2 is a guess deduction
     '''
-    if user_input in my_letters and len(user_input) == 1: 
+    temp = user_input in my_letters
+    if temp == True:
         if warnings_count > 0:
             warnings_count -= 1
-            print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left.')
-            get_guessed_word(secret_word, my_letters)
+            temp1 = get_guessed_word(secret_word, my_letters)
+            print('Oops! You have already guessed that letter! You have ' + str(warnings_count) + ' warnings left: ' + str(temp1))
             return 1
-        elif warnings_count == 0:
+        elif warnings_count <= 0:
             guess_count -= 1
-            print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess")
-            get_guessed_word(secret_word, my_letters)
+            temp1 = get_guessed_word(secret_word, my_letters)
+            print("Oops! You've already guessed that letter. You have no warnings left so you lose one guess: " + str(temp1))
             return 2
-    else:
+    elif temp == False:
         return 0
 
 #Check 3#
@@ -182,16 +183,17 @@ def game_code(user_input, secret_word, my_letters, guess_count):
         my_letters.append(user_input)
         mytempstr1 = get_guessed_word(secret_word, my_letters)
         print('Good guess: ' + mytempstr1)
+        return 0
     elif user_input in ['a','e','i','o','u'] and len(user_input) == 1:
         my_letters.append(user_input)
         mytempstr1 = get_guessed_word(secret_word, my_letters)
         print('Oops! That letter is not in my word: ' + mytempstr1)
-        guess_count -= 2
+        return 1
     elif len(user_input) == 1:
         my_letters.append(user_input)
         mytempstr1 = get_guessed_word(secret_word, my_letters)
         print('Oops! That letter is not in my word: ' + mytempstr1)
-        guess_count -= 1
+        return 2
            
   
 def hangman(secret_word):
@@ -238,17 +240,16 @@ def hangman(secret_word):
         #Input the guess here
         myinput1 = str(input('Please guess a letter: '))
         check1 = input_validity_check(myinput1, warnings_count, guess_count)
-        
+
         # Validation and game code#
         if check1 == 0: 
-            check2 = repeat_check(myinput1, secret_word, warnings_count, guess_count)
+            check2 = repeat_check(myinput1, my_letters, secret_word, warnings_count, guess_count)
             if check2 == 0:
-                game_code(myinput1, secret_word, my_letters, guess_count)
                 check3 = game_code(myinput1, secret_word, my_letters, guess_count)
                 if check3 == 1:
                     guess_count -= 2
                 elif check3 == 2:
-                    guess_count -= 1
+                    guess_count -= 1        
             elif check2 == 1: 
                 warnings_count -= 1
             elif check2 == 2: 
@@ -257,7 +258,7 @@ def hangman(secret_word):
             warnings_count -= 1
         elif check1 == 2:
             guess_count -= 1
-               
+   
         #End game conditions#
         if is_word_guessed(secret_word, my_letters) == True:
             score_count = guess_count * len(set(secret_word))
@@ -276,6 +277,7 @@ def hangman(secret_word):
 '''
 BUGS
 - Number of iterations in for loop to be troubleshooted. Now it is at a fixed number
+- Input small letter conversion
 '''
 
 
@@ -397,8 +399,8 @@ if __name__ == "__main__":
     # To test part 2, comment out the pass line above and
     # uncomment the following two lines.
     
-    #secret_word = choose_word(wordlist)
-    #hangman(secret_word)
+    secret_word = choose_word(wordlist)
+    hangman(secret_word)
 
 ###############
     
