@@ -295,15 +295,17 @@ def match_with_gaps(my_word, other_word, my_letters):
         False otherwise: 
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    my_word = my_word.replace(" ","")
-    
+    my_word = my_word.replace(' ', '')
     if len(my_word) != len(other_word):
         return False
     else:
-        for i in range(len(other_word)):
-            if my_word[i] != other_word[i]:
+        for i in range(len(my_word)):
+            if my_word[i] != '_' and (
+                my_word[i] != other_word[i] \
+                or my_word.count(my_word[i]) != other_word.count(my_word[i]) \
+            ):
                 return False
-            
+        return True
             
             
 def show_possible_matches(my_word):
@@ -317,9 +319,40 @@ def show_possible_matches(my_word):
 
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    words_list = open(WORDLIST_FILENAME, 'r').readline().split()
+    possible_matches = []
+    for other_word in words_list:
+        if match_with_gaps(my_word, other_word, my_letters):
+            possible_matches.append(other_word)
+    print(' '.join(possible_matches))
 
+#Check 1 for version with hints#
+def input_validity_check_with_hints(secret_word, user_input, warnings_count, guess_count):
+    '''
+    Parameters
+    ----------
+    secret_word: actual answer to the Hangman game
+    user_input: letter input by player for guess
+    warnings_count: number of warnings left.
+    guess_count: number of guesses left
+    
+    Returns
+    -------
+    0, 1, 2, 3 as integers. 0 represents check passed. 1 represents warning deduction. 2 represents guess deduction. 3 represents when the hint wildcard is called. 
 
+    '''
+    if user_input == "*":
+        return 3
+    elif (str.isalpha(user_input) == False or len(user_input) != 1):
+        if warnings_count > 0:
+            print('Oops! Invalid input! Please key in only ONE alphabet. You have ' + str(warnings_count) + ' warnings left.')
+            return 1
+        elif warnings_count <= 0: 
+            print('Oops! Invalid input! Please key in only ONE alphabet. You have no warnings left so you lose one guess')
+            return 2
+    else:
+        return 0
+ 
 
 def hangman_with_hints(secret_word):
     '''
@@ -349,6 +382,63 @@ def hangman_with_hints(secret_word):
     Follows the other limitations detailed in the problem write-up.
     '''
     # FILL IN YOUR CODE HERE AND DELETE "pass"
+    
+    #Initialize variables
+    guess_count = 6
+    warnings_count = 3
+    my_letters = []
+    
+    print('Welcome to the game Hangman!')
+    print('I am thinking of a word that is '+ str(len(secret_word)) +' letter(s) long.')
+
+    for i in range(100):
+        print('-'*50)
+        #Initial printing of warning and guess count:
+        if i == 0:
+            print('You have ' + str(warnings_count) + ' warning(s) left.')
+            print('You have '+str(guess_count)+' guess(es) left.')
+            print('Available characters: ' + get_available_letters(my_letters))
+        
+        #Input the guess here
+        myinput1 = str(input('Please guess a letter: '))
+        
+     
+        check1 = input_validity_check_with_hints(secret_word, myinput1, warnings_count, guess_count)
+
+        # Validation and game code#
+        if check1 == 3:
+            temp2 = get_guessed_word(secret_word, my_letters)
+            show_possible_matches(temp2)
+        elif check1 == 0: 
+            check2 = repeat_check(myinput1, my_letters, secret_word, warnings_count, guess_count)
+            if check2 == 0:
+                check3 = game_code(myinput1, secret_word, my_letters, guess_count)
+                if check3 == 1:
+                    guess_count -= 2
+                elif check3 == 2:
+                    guess_count -= 1        
+            elif check2 == 1: 
+                warnings_count -= 1
+            elif check2 == 2: 
+                guess_count -= 1
+        elif check1 == 1:
+            warnings_count -= 1
+        elif check1 == 2:
+            guess_count -= 1
+
+   
+        #End game conditions#
+        if is_word_guessed(secret_word, my_letters) == True:
+            score_count = guess_count * len(set(secret_word))
+            print('Congratulations, you won!')
+            print('Your total score for this game is: ' + str(score_count) + '.')
+            break
+        if guess_count <= 0:
+            print('Sorry you ran out of guesses. The word was ' + secret_word + '.')
+            break
+        print('You have ' + str(warnings_count) + ' warning(s) left.')
+        print('You have '+str(guess_count)+' guess(es) left.')
+        print('Available characters: ' + get_available_letters(my_letters))
     pass
 
     
@@ -381,5 +471,5 @@ if __name__ == "__main__":
     # To test part 3 re-comment out the above lines and 
     # uncomment the following two lines. 
     
-    #secret_word = choose_word(wordlist)
-    #hangman_with_hints(secret_word)
+    secret_word = choose_word(wordlist)
+    hangman_with_hints(secret_word)
